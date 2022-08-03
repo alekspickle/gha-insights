@@ -1,0 +1,25 @@
+[package]
+name = "ci-insights-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["Aleks Pickle <aleks.work2222@gmail.com>"]
+description="""
+GitHub API examples with Octocrab crate
+"""
+
+[features]
+default = []
+
+# server with DB
+server = ["rocket"]
+
+[dependencies]
+envy = "0.4.2"
+octocrab = "0.15"
+rocket = { version = "0.5.0-rc.2", features = ["secrets"], optional = true }
+structopt = { version = "0.3", features = ["wrap_help"] }
+tokio = { version = "1.6.1", default-features = false, features = ["macros", "rt-multi-thread", "time"] }
+thiserror = "1.0"
+jsonwebtoken = "7"
+futures = "0.3.8"
+url = "2.2.2"

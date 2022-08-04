@@ -11,7 +11,7 @@ use octocrab::{
 // use rocket::{Build, Rocket};
 use structopt::StructOpt;
 
-const NAME: &str = "ci-insights-rs";
+const NAME: &str = "ci-insights";
 
 #[derive(Debug, Clone, StructOpt)]
 #[structopt(name = NAME)]
@@ -51,7 +51,7 @@ impl AppOptions {
                 .map_err(|e| Error::Octocrab(e));
         }
 
-        // Generate private appp key for this purpose:
+        // Generate private app key for this purpose:
         // https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps
         let pem_bytes = self
             .app_private_key

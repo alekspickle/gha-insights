@@ -1,5 +1,5 @@
 [package]
-name = "ci-insights-rs"
+name = "ci-insights"
 version = "0.1.0"
 edition = "2021"
 authors = ["Aleks Pickle <aleks.work2222@gmail.com>"]

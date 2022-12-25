@@ -4,11 +4,10 @@ use crate::{
     Result,
 };
 use octocrab::{
-    models::{InstallationToken, Repository, RunId},
+    models::{InstallationToken, RunId},
     params::apps::CreateInstallationAccessToken,
     Octocrab,
 };
-// use rocket::{Build, Rocket};
 use structopt::StructOpt;
 
 const NAME: &str = "ci-insights";
@@ -43,7 +42,7 @@ pub struct AppOptions {
 
 impl AppOptions {
     /// Create an instance of octocrab service with JWT app authentication
-    pub async fn into_octo(&self) -> Result<Octocrab> {
+    pub async fn octo(&self) -> Result<Octocrab> {
         if let Some(token) = &self.token {
             return octocrab::Octocrab::builder()
                 .personal_token(token.clone())

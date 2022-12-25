@@ -1,17 +1,15 @@
 [package]
 name = "ci-insights"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Aleks Pickle <aleks.work2222@gmail.com>"]
 description="""
-GitHub API examples with Octocrab crate
+GitHub Actions explorer crate.
 """
 
 [features]
 default = []
-
-# server with DB
-server = ["rocket"]
+server = ["rocket"]  # server with DB
 
 [dependencies]
 envy = "0.4.2"

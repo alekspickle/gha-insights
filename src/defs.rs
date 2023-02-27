@@ -55,6 +55,7 @@ impl From<Job> for JobInfo {
     }
 }
 
+/// Struct aggregating useful step info
 #[derive(Debug)]
 pub struct StepInfo {
     pub name: String,

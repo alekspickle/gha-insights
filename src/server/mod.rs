@@ -1,7 +1,8 @@
 use rocket::{Build, Rocket};
 
-mod catch;
-mod routes;
+pub mod catch;
+pub mod db;
+pub mod routes;
 
 #[rocket::launch]
 pub fn rocket() -> Rocket<Build> {

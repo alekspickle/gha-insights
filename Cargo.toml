@@ -9,15 +9,25 @@ GitHub Actions explorer crate.
 
 [features]
 default = []
-server = ["rocket"]  # server with DB
+server = ["rocket", "rocket_db_pools", "sqlx"]  # server with DB
 
 [dependencies]
 envy = "0.4.2"
 octocrab = "0.15"
-rocket = { version = "0.5.0-rc.2", features = ["secrets"], optional = true }
 structopt = { version = "0.3", features = ["wrap_help"] }
 tokio = { version = "1.6.1", default-features = false, features = ["macros", "rt-multi-thread", "time"] }
 thiserror = "1.0"
 jsonwebtoken = "7"
-futures = "0.3.8"
+futures = "0.3"
+futures-util = "0.3"
 url = "2.2.2"
+
+# server deps
+rocket = { version = "0.5.0-rc.2", features = ["secrets", "json"], optional = true }
+rocket_db_pools = { version = "0.1.0-rc.2", features = ["sqlx_postgres"], optional = true }
+[dependencies.sqlx]
+version = "0.6.0"
+default-features = false
+features = ["runtime-tokio-native-tls", "postgres", "macros", "offline", "migrate"]
+optional = true
+

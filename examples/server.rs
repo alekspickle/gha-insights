@@ -1,4 +1,4 @@
-use ci_insights::{ AppOptions, GenericResult};
+use ci_insights::{AppOptions, GenericResult};
 use structopt::StructOpt;
 
 fn main() -> GenericResult<()> {

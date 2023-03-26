@@ -25,7 +25,3 @@ pub use error::*;
 pub use server::*;
 
 pub use octocrab::Octocrab;
-
-pub type GenericResult<T = (), E = Box<dyn std::error::Error + Send + Sync>> =
-    std::result::Result<T, E>;
-pub type Result<T = (), E = Error> = std::result::Result<T, E>;

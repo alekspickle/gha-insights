@@ -1,8 +1,10 @@
 use ci_insights::{AppOptions, GenericResult};
-use structopt::StructOpt;
+use clap::Parser;
 
 fn main() -> GenericResult<()> {
-    let _opts = AppOptions::from_args();
+    let _opts = AppOptions::parse();
+
+    // TODO: setup server
 
     Ok(())
 }

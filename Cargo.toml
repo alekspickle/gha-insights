@@ -2,7 +2,8 @@
 name = "ci-insights"
 version = "0.2.0"
 edition = "2021"
-authors = ["Aleks Pickle <aleks.work2222@gmail.com>"]
+authors = ["Oleks Pickle <aleks.work2222+gh@gmail.com>"]
+licence = ["MIT"]
 description="""
 GitHub Actions explorer crate.
 """
@@ -12,19 +13,21 @@ default = []
 server = ["rocket", "rocket_db_pools", "sqlx"]  # server with DB
 
 [dependencies]
+clap = { version = "4.1.13", features = ["wrap_help", "derive", "env"] }
 envy = "0.4.2"
-octocrab = "0.15"
-structopt = { version = "0.3", features = ["wrap_help"] }
-tokio = { version = "1.6.1", default-features = false, features = ["macros", "rt-multi-thread", "time"] }
-thiserror = "1.0"
-jsonwebtoken = "7"
 futures = "0.3"
 futures-util = "0.3"
+octocrab = "0.19"
+tokio = { version = "1.6.1", default-features = false, features = ["macros", "rt-multi-thread", "time"] }
+thiserror = "1.0"
+jsonwebtoken = "8"
 url = "2.2.2"
 
 # server deps
 rocket = { version = "0.5.0-rc.2", features = ["secrets", "json"], optional = true }
 rocket_db_pools = { version = "0.1.0-rc.2", features = ["sqlx_postgres"], optional = true }
+tracing = "0.1.37"
+
 [dependencies.sqlx]
 version = "0.6.0"
 default-features = false

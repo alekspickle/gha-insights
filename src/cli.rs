@@ -3,40 +3,40 @@ use crate::{
     error::Error,
     Result,
 };
+use clap::{command, Parser};
 use octocrab::{
     models::{InstallationToken, RunId},
     params::apps::CreateInstallationAccessToken,
     Octocrab,
 };
-use structopt::StructOpt;
 
-const NAME: &str = "ci-insights";
+const NAME: &str = env!("CARGO_PKG_NAME");
 
-#[derive(Debug, Clone, StructOpt)]
-#[structopt(name = NAME)]
+#[derive(Debug, Clone, Parser)]
+#[command(author, version, about, name = NAME)]
 pub struct AppOptions {
     /// Choose a name for your app
-    #[structopt(long, short = "n", env, default_value = NAME)]
+    #[arg(long, short, env = "NAME", default_value = NAME)]
     pub name: String,
 
     // Github token authorized to do what you want to do.
-    #[structopt(long, env)]
+    #[arg(long, env)]
     pub token: Option<String>,
 
     // User name, usually it's your GitHub handle
-    #[structopt(long, short, env, default_value = NAME)]
+    #[arg(long, short, env, default_value = NAME)]
     pub gh_user: String,
 
     // Repository you want to analyze
-    #[structopt(long, short, env, default_value = NAME)]
+    #[arg(long, short, env, default_value = NAME)]
     pub repo_name: String,
 
     /// App id. Override for more than one instance usage with JWT tokens
-    #[structopt(long, env, conflicts_with = "token")]
+    #[arg(long, env, conflicts_with = "token")]
     pub app_id: Option<u64>,
 
     /// App private key. Override for more than one instance usage with JWT tokens
-    #[structopt(long, env, conflicts_with = "token")]
+    #[arg(long, env, conflicts_with = "token")]
     pub app_private_key: Option<String>,
 }
 
@@ -47,7 +47,7 @@ impl AppOptions {
             return octocrab::Octocrab::builder()
                 .personal_token(token.clone())
                 .build()
-                .map_err(|e| Error::Octocrab(e));
+                .map_err(Error::Octocrab);
         }
 
         // Generate private app key for this purpose:
@@ -57,20 +57,20 @@ impl AppOptions {
             .clone()
             .map(|s| s.as_bytes().to_owned())
             .expect("invalid RSA key");
-        let key = jsonwebtoken::EncodingKey::from_rsa_pem(&pem_bytes).map_err(|e| Error::JWT(e))?;
-        let token = octocrab::auth::create_jwt(self.app_id.clone().unwrap().into(), &key)?;
+        let key = jsonwebtoken::EncodingKey::from_rsa_pem(&pem_bytes).map_err(Error::JWT)?;
+        let token = octocrab::auth::create_jwt(self.app_id.unwrap().into(), &key)?;
 
         let gh = octocrab::Octocrab::builder()
             .personal_token(token)
             .build()
-            .map_err(|e| Error::Octocrab(e))?;
+            .map_err(Error::Octocrab)?;
 
         let installations = gh
             .apps()
             .installations()
             .send()
             .await
-            .map_err(|e| Error::Octocrab(e))?
+            .map_err(Error::Octocrab)?
             .take_items();
 
         let mut create_access_token = CreateInstallationAccessToken::default();
@@ -87,15 +87,16 @@ impl AppOptions {
         octocrab::OctocrabBuilder::new()
             .personal_token(access.token)
             .build()
-            .map_err(|e| Error::Octocrab(e))
+            .map_err(Error::Octocrab)
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct App {
     pub gh: Octocrab,
-    // pub rocket: Option<Rocket<Build>>,
     pub opts: AppOptions,
+    #[cfg(feature = "server")]
+    pub rocket: Option<Rocket<Build>>,
 }
 
 impl App {
@@ -103,14 +104,15 @@ impl App {
         Self { gh, opts }
     }
 
-    // pub fn rocket(&self) -> Rocket<Build> {
-    //     self.rocket.clone().unwrap()
-    // }
+    #[cfg(feature = "server")]
+    pub fn rocket(&self) -> Rocket<Build> {
+        self.rocket.clone().unwrap()
+    }
 
     pub async fn get_jobs(&self, id: RunId) -> Result<Vec<JobInfo>> {
         let wf = self.gh.workflows(&self.opts.gh_user, &self.opts.repo_name);
         let mut page = wf
-            .list_jobs(id.clone())
+            .list_jobs(id)
             .per_page(50)
             .page(1u32)
             .send()
@@ -127,9 +129,5 @@ impl App {
         let runs: Vec<RunInfo> = page.take_items().into_iter().map(RunInfo::from).collect();
 
         Ok(runs)
-    }
-
-    fn set_octo(&mut self, gh: Octocrab) {
-        self.gh = gh;
     }
 }
